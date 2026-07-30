@@ -4,7 +4,7 @@ import teamImg from "./assets/team.jpg";
 // TODO: importa aquí tus fotos adicionales, por ejemplo:
 import teamImg2 from "./assets/vera.png";
 // TODO: agrega la foto real de Camilo en /src/assets y ajusta el nombre del archivo
-import camiloImg from "./assets/camilo.png";
+import camiloImg from "./assets/CAMILO.jpg";
 // TODO: agrega el PDF del certificado de la Licencia PRO Futsal en /src/assets
 import certProPdf from "./assets/lic_pro.pdf";
 // TODO: agrega el PDF de la Tarjeta de Entrenador COCED en /src/assets
