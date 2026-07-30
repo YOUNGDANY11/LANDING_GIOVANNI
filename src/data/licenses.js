@@ -31,7 +31,15 @@ export const LICENSES = [
     body:
       "Primer nivel de licenciamiento otorgado por la Federación Colombiana de Fútbol. Habilita para la dirección de escuelas de formación y categorías menores.",
   },
+  {
+    id: "coced",
+    label: "Tarjeta COCED",
+    org: "COCED",
+    title: "Tarjeta de Entrenador COCED",
+    body: "Tarjeta de entrenador COCED",
+},
 ];
+
 
 export const PHONES = [
   { label: "Cel. 1", number: "3115824523" },
