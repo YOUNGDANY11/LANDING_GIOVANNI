@@ -241,7 +241,7 @@ function CertModal({ open, onClose, pdf, title }) {
       onClick={onClose}
     >
       <div
-        className="relative max-w-[640px] w-full bg-navy border border-gold shadow-[0_30px_70px_rgba(0,0,0,0.6)]"
+        className="relative max-w-[760px] w-full bg-navy border border-gold shadow-[0_30px_70px_rgba(0,0,0,0.6)] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -266,16 +266,13 @@ function CertModal({ open, onClose, pdf, title }) {
               Abrir PDF ↗
             </a>
           </div>
-          {/* Visor embebido del PDF; si el navegador no lo soporta, usar el botón de arriba */}
-          <object
-            data={pdf}
-            type="application/pdf"
-            className="w-full h-[70vh] border border-white/10 bg-white"
-          >
-            <p className="text-sm text-[#C7CDDA] p-4">
-              Tu navegador no puede mostrar el PDF aquí. Usa el botón "Abrir PDF ↗" para verlo.
-            </p>
-          </object>
+          <div className="h-[78vh] min-h-[520px] max-h-[calc(100vh-9rem)] border border-white/10 bg-white overflow-hidden rounded-sm">
+            <iframe
+              src={pdf}
+              title={title}
+              className="w-full h-full border-0"
+            />
+          </div>
         </div>
       </div>
     </div>
