@@ -1,6 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
-import pdfWorkerUrl from "pdfjs-dist/legacy/build/pdf.worker.mjs?url";
 import giovanniImg from "./assets/Giovanni.png";
 import teamImg from "./assets/team.jpg";
 // TODO: importa aquí tus fotos adicionales, por ejemplo:
@@ -21,8 +19,6 @@ import youtubeIcon from "./assets/youtube.svg";
 import tiktokIcon from "./assets/tiktok.svg";
 import linkedinIcon from "./assets/threads.svg";
 import gmailIcon from "./assets/gmail.svg";
-
-pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
 // ---- PDFs asociados a cada licencia (por id) ----
 // Agrega aquí una entrada por cada licencia que deba tener botón "Más información" + modal PDF.
 // El "id" debe coincidir exactamente con el id definido en data/licenses.js
@@ -237,148 +233,15 @@ function SocialLinks({ links }) {
   );
 }
 // Modal simple para mostrar el certificado (PDF) de una licencia
-function PdfPreview({ pdf, title }) {
-  const containerRef = useRef(null);
-  const pdfDocRef = useRef(null);
-  const canvasRefs = useRef([]);
-  const [pageCount, setPageCount] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [containerWidth, setContainerWidth] = useState(0);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    setLoading(true);
-    setError("");
-    setPageCount(0);
-    canvasRefs.current = [];
-    pdfDocRef.current = null;
-
-    (async () => {
-      try {
-        const document = await pdfjsLib.getDocument({ url: pdf }).promise;
-        if (cancelled) return;
-        pdfDocRef.current = document;
-        setPageCount(document.numPages);
-      } catch (loadError) {
-        if (!cancelled) {
-          setError("No se pudo cargar la vista previa del PDF.");
-          setLoading(false);
-        }
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [pdf]);
-
-  useEffect(() => {
-    const element = containerRef.current;
-    if (!element) return undefined;
-
-    const updateWidth = () => setContainerWidth(element.clientWidth);
-    updateWidth();
-
-    if (typeof ResizeObserver === "undefined") {
-      window.addEventListener("resize", updateWidth);
-      return () => window.removeEventListener("resize", updateWidth);
-    }
-
-    const observer = new ResizeObserver(updateWidth);
-    observer.observe(element);
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    const renderPages = async () => {
-      const document = pdfDocRef.current;
-      if (!document || !pageCount || !containerWidth) return;
-
-      try {
-        for (let pageNumber = 1; pageNumber <= pageCount; pageNumber += 1) {
-          if (cancelled) return;
-
-          const page = await document.getPage(pageNumber);
-          const baseViewport = page.getViewport({ scale: 1 });
-          const scale = Math.min((containerWidth - 16) / baseViewport.width, 1.5);
-          const viewport = page.getViewport({ scale });
-          const canvas = canvasRefs.current[pageNumber - 1];
-
-          if (!canvas) continue;
-
-          const context = canvas.getContext("2d");
-          canvas.width = Math.floor(viewport.width);
-          canvas.height = Math.floor(viewport.height);
-          canvas.style.width = "100%";
-          canvas.style.height = "auto";
-
-          await page.render({ canvasContext: context, viewport }).promise;
-        }
-
-        if (!cancelled) setLoading(false);
-      } catch (renderError) {
-        if (!cancelled) {
-          setError("No se pudo mostrar la vista previa del PDF.");
-          setLoading(false);
-        }
-      }
-    };
-
-    renderPages();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [pageCount, containerWidth, pdf]);
-
-  return (
-    <div
-      ref={containerRef}
-      className="relative h-[calc(100dvh-9rem)] min-h-[420px] max-h-[78vh] overflow-y-auto bg-white rounded-sm"
-      aria-label={title}
-    >
-      {loading && !error && (
-        <div className="absolute inset-0 flex items-center justify-center bg-white/90 text-[#293246] text-sm font-semibold">
-          Cargando vista previa...
-        </div>
-      )}
-
-      {error ? (
-        <div className="flex h-full items-center justify-center p-4 text-center text-sm text-[#293246]">
-          {error}
-        </div>
-      ) : (
-        <div className="space-y-4 p-2 sm:p-3">
-          {Array.from({ length: pageCount }).map((_, index) => (
-            <div key={index} className="rounded-sm overflow-hidden border border-[#D7DDE8] shadow-sm bg-white">
-              <canvas
-                ref={(node) => {
-                  canvasRefs.current[index] = node;
-                }}
-                className="block w-full"
-                aria-label={`Página ${index + 1}`}
-              />
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
 function CertModal({ open, onClose, pdf, title }) {
   if (!open) return null;
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 px-2 py-2 sm:px-4 sm:py-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 px-4"
       onClick={onClose}
     >
       <div
-        className="relative max-w-[760px] w-full max-h-[calc(100dvh-1rem)] sm:max-h-[calc(100dvh-2rem)] bg-navy border border-gold shadow-[0_30px_70px_rgba(0,0,0,0.6)] overflow-hidden flex flex-col"
+        className="relative max-w-[760px] w-full bg-navy border border-gold shadow-[0_30px_70px_rgba(0,0,0,0.6)] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -389,7 +252,7 @@ function CertModal({ open, onClose, pdf, title }) {
         >
           ×
         </button>
-        <div className="p-4 sm:p-5 flex-1 min-h-0 flex flex-col">
+        <div className="p-4 sm:p-5">
           <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
             <p className="font-condensed font-bold text-gold uppercase text-sm tracking-[0.08em] m-0">
               {title}
@@ -403,8 +266,12 @@ function CertModal({ open, onClose, pdf, title }) {
               Abrir PDF ↗
             </a>
           </div>
-          <div className="flex-1 min-h-0 border border-white/10 bg-white overflow-hidden rounded-sm">
-            <PdfPreview pdf={pdf} title={title} />
+          <div className="h-[78vh] min-h-[520px] max-h-[calc(100vh-9rem)] border border-white/10 bg-white overflow-hidden rounded-sm">
+            <iframe
+              src={pdf}
+              title={title}
+              className="w-full h-full border-0"
+            />
           </div>
         </div>
       </div>
