@@ -12,7 +12,13 @@ import cocedPdf from "./assets/tarjeta_coced.pdf";
 import LicenseButton from "./components/LicenseButton.jsx";
 import TrainingAlert from "./components/TrainingAlert.jsx";
 import { LICENSES, PHONES, EMAIL, waLink, telLink } from "./data/licenses.js";
-
+import facebookIcon from "./assets/FACEBOOK.svg";
+import instagramIcon from "./assets/instagram.svg";
+import xIcon from "./assets/x.svg";
+import youtubeIcon from "./assets/youtube.svg";
+import tiktokIcon from "./assets/tiktok.svg";
+import linkedinIcon from "./assets/threads.svg";
+import gmailIcon from "./assets/gmail.svg";
 // ---- PDFs asociados a cada licencia (por id) ----
 // Agrega aquí una entrada por cada licencia que deba tener botón "Más información" + modal PDF.
 // El "id" debe coincidir exactamente con el id definido en data/licenses.js
@@ -21,6 +27,18 @@ const LICENSE_CERTS = {
   coced: { pdf: cocedPdf, title: "Tarjeta de Entrenador — COCED" },
 };
 
+// ---- Redes sociales ----
+// TODO: reemplaza cada "url" por el enlace real de cada red/página
+// Para Gmail, el enlace normalmente es un mailto: con el correo de contacto
+const SOCIAL_LINKS = [
+  { name: "Facebook", url: "https://facebook.com/verafc", icon: facebookIcon },
+  { name: "Instagram", url: "https://www.instagram.com/verafutbolclub", icon: instagramIcon },
+  { name: "X (Twitter)", url: "https://x.com/verafutbolclub", icon: xIcon },
+  { name: "YouTube", url: "https://www.youtube.com/@verafutbolclub", icon: youtubeIcon },
+  { name: "TikTok", url: "https://tiktok.com/@verafutbolclub", icon: tiktokIcon },
+  { name: "Threads", url: "https://threads.net/@verafutbolclub", icon: linkedinIcon },
+  { name: "Gmail", url: `mailto:${EMAIL}`, icon: gmailIcon },
+];
 // ---- Educación académica ampliada ----
 const EDUCATION = [
   {
@@ -119,6 +137,7 @@ function TeamSlider({ images }) {
     setIndex(i);
     resetAutoplay();
   };
+  
 
   return (
     <div className="relative">
@@ -194,7 +213,25 @@ function CamiloCard({ img }) {
     </div>
   );
 }
-
+function SocialLinks({ links }) {
+  return (
+    <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3.5">
+      {links.map((s) => (
+        <a
+          key={s.name}
+          href={s.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={s.name}
+          title={s.name}
+          className="inline-flex items-center justify-center rounded-md shadow-sm hover:opacity-85 hover:-translate-y-0.5 transition-all"
+        >
+          <img src={s.icon} alt={s.name} className="h-9 sm:h-14 w-auto block" />
+        </a>
+      ))}
+    </div>
+  );
+}
 // Modal simple para mostrar el certificado (PDF) de una licencia
 function CertModal({ open, onClose, pdf, title }) {
   if (!open) return null;
@@ -422,6 +459,15 @@ export default function App() {
             </div>
           </div>
         </div>
+
+        {/* redes sociales */}
+        <div className="relative z-10 mx-6 sm:mx-12 mt-8 pt-6 border-t border-dashed border-white/15">
+          <p className="font-condensed text-sm font-bold tracking-[0.22em] uppercase text-gold m-0 mb-3.5">
+            Redes sociales
+          </p>
+          <SocialLinks links={SOCIAL_LINKS} />
+        </div>
+
 
         {/* reconocimientos */}
         <div className="relative z-10 mx-6 sm:mx-12 mt-1 pt-6 border-t border-dashed border-white/15">
