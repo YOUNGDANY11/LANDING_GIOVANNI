@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import * as pdfjsLib from "pdfjs-dist/webpack.mjs";
+import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
+import pdfWorkerUrl from "pdfjs-dist/legacy/build/pdf.worker.mjs?url";
 import giovanniImg from "./assets/Giovanni.png";
 import teamImg from "./assets/team.jpg";
 // TODO: importa aquí tus fotos adicionales, por ejemplo:
@@ -20,6 +21,8 @@ import youtubeIcon from "./assets/youtube.svg";
 import tiktokIcon from "./assets/tiktok.svg";
 import linkedinIcon from "./assets/threads.svg";
 import gmailIcon from "./assets/gmail.svg";
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
 // ---- PDFs asociados a cada licencia (por id) ----
 // Agrega aquí una entrada por cada licencia que deba tener botón "Más información" + modal PDF.
 // El "id" debe coincidir exactamente con el id definido en data/licenses.js
@@ -254,7 +257,7 @@ function PdfPreview({ pdf, title }) {
 
     (async () => {
       try {
-        const document = await pdfjsLib.getDocument(pdf).promise;
+        const document = await pdfjsLib.getDocument({ url: pdf }).promise;
         if (cancelled) return;
         pdfDocRef.current = document;
         setPageCount(document.numPages);
