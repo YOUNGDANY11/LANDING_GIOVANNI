@@ -19,6 +19,7 @@ import youtubeIcon from "./assets/youtube.svg";
 import tiktokIcon from "./assets/tiktok.svg";
 import linkedinIcon from "./assets/threads.svg";
 import gmailIcon from "./assets/gmail.svg";
+import logoImg from "./assets/logo.png";
 // ---- PDFs asociados a cada licencia (por id) ----
 // Agrega aquí una entrada por cada licencia que deba tener botón "Más información" + modal PDF.
 // El "id" debe coincidir exactamente con el id definido en data/licenses.js
@@ -38,6 +39,12 @@ const SOCIAL_LINKS = [
   { name: "TikTok", url: "https://tiktok.com/@verafutbolclub", icon: tiktokIcon },
   { name: "Threads", url: "https://threads.net/@verafutbolclub", icon: linkedinIcon },
   { name: "Gmail", url: `mailto:${EMAIL}`, icon: gmailIcon },
+];
+
+const FOOTER_SOCIAL_LINKS = [
+  { name: "Facebook", url: "https://facebook.com/verafc", icon: facebookIcon },
+  { name: "Instagram", url: "https://www.instagram.com/verafutbolclub", icon: instagramIcon },
+  { name: "TikTok", url: "https://tiktok.com/@verafutbolclub", icon: tiktokIcon },
 ];
 // ---- Educación académica ampliada ----
 const EDUCATION = [
@@ -102,6 +109,8 @@ const teamImages = [
 
 // Duración de cada imagen del slider, en milisegundos
 const SLIDER_INTERVAL_MS = 3000;
+
+const formatPhone = (num) => `${num.slice(0, 3)} ${num.slice(3, 6)} ${num.slice(6)}`;
 
 function TeamSlider({ images }) {
   const [index, setIndex] = useState(0);
@@ -230,6 +239,14 @@ function SocialLinks({ links }) {
         </a>
       ))}
     </div>
+  );
+}
+
+function WhatsAppIcon({ className = "w-4 h-4" }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden="true" fill="currentColor">
+      <path d="M20.52 3.48A11.92 11.92 0 0 0 12.04 0C5.42 0 .04 5.38.04 12c0 2.12.56 4.2 1.62 6.04L0 24l6.17-1.62A11.98 11.98 0 0 0 12.04 24h.01c6.62 0 12-5.38 12-12a11.9 11.9 0 0 0-3.53-8.52Zm-8.48 18.5h-.01a10 10 0 0 1-5.1-1.39l-.37-.22-3.66.96.98-3.56-.24-.37A9.95 9.95 0 0 1 2.04 12c0-5.51 4.49-10 10-10 2.67 0 5.18 1.04 7.07 2.93a9.92 9.92 0 0 1 2.94 7.07c0 5.51-4.49 10-10.01 10Zm5.48-7.49c-.3-.15-1.76-.86-2.04-.96-.27-.1-.47-.15-.67.15-.2.3-.76.95-.93 1.15-.17.2-.34.22-.63.08-.3-.15-1.26-.47-2.4-1.51a9.06 9.06 0 0 1-1.67-2.08c-.17-.29-.02-.45.13-.6.14-.13.3-.34.45-.51.15-.18.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.6-.92-2.2-.24-.57-.48-.49-.67-.5h-.57c-.2 0-.52.08-.8.37-.27.3-1.04 1.01-1.04 2.46 0 1.44 1.07 2.84 1.22 3.04.15.2 2.09 3.19 5.06 4.47.71.31 1.26.49 1.69.62.71.22 1.36.18 1.87.11.57-.08 1.76-.72 2.01-1.41.25-.69.25-1.28.17-1.41-.07-.13-.27-.2-.57-.35Z" />
+    </svg>
   );
 }
 // Modal simple para mostrar el certificado (PDF) de una licencia
@@ -363,8 +380,8 @@ export default function App() {
         {/* main grid */}
         <div className="relative z-10 grid grid-cols-1 md:grid-cols-[300px_1fr]">
           {/* photo column */}
-          <div className="px-6 pt-6 sm:pl-10 sm:pt-8 md:pb-8 flex flex-col items-start">
-            <div className="relative w-[220px] sm:w-[260px]">
+          <div className="px-6 pt-6 sm:pl-10 sm:pt-8 md:pb-8 flex flex-col items-center md:items-start">
+            <div className="relative w-[220px] sm:w-[260px] mx-auto md:mx-0">
               <div className="absolute -top-3 -left-3 w-full h-full border-2 border-gold z-0" />
               <img
                 src={giovanniImg}
@@ -372,8 +389,42 @@ export default function App() {
                 className="relative z-10 w-full block object-cover aspect-[260/318]"
               />
             </div>
-            <div className="mt-4 w-[220px] sm:w-[260px] bg-crimson px-3 py-2 font-condensed font-bold tracking-[0.06em] text-[13px] text-center uppercase">
+            <div className="mt-4 w-[220px] sm:w-[260px] mx-auto md:mx-0 bg-crimson px-3 py-2 font-condensed font-bold tracking-[0.06em] text-[13px] text-center uppercase">
               Licencia PRO Futsal · Conmebol – FIFA – FCF
+            </div>
+
+            <div className="mt-5 w-[220px] sm:w-[260px] mx-auto md:mx-0 rounded-sm border border-gold/35 bg-gradient-to-b from-[#102042] to-[#0a1429] p-3.5 shadow-[0_14px_32px_rgba(0,0,0,0.35)]">
+              <p className="font-condensed text-xs font-bold tracking-[0.16em] uppercase text-gold m-0 mb-2.5">
+                Contacto directo
+              </p>
+              <div className="grid gap-2.5">
+                {PHONES.map((p) => (
+                  <div key={p.number} className="flex items-center justify-between gap-2 border border-white/10 bg-navy3/80 px-2.5 py-2 rounded-sm">
+                    <a
+                      href={telLink(p.number)}
+                      className="font-condensed text-sm font-semibold text-white no-underline hover:text-gold transition-colors"
+                    >
+                      {p.label}: {formatPhone(p.number)}
+                    </a>
+                    <a
+                      href={waLink(p.number)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`WhatsApp ${p.label}`}
+                      title={`WhatsApp ${p.label}`}
+                      className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-whats text-white shadow-md shadow-black/30 hover:scale-105 hover:brightness-105 transition-all"
+                    >
+                      <WhatsAppIcon className="w-[18px] h-[18px]" />
+                    </a>
+                  </div>
+                ))}
+              </div>
+              <a
+                href={`mailto:${EMAIL}`}
+                className="mt-3 inline-flex items-center font-condensed text-sm font-semibold text-gold no-underline hover:text-white transition-colors"
+              >
+                {EMAIL}
+              </a>
             </div>
           </div>
 
@@ -519,6 +570,25 @@ export default function App() {
 
             {/* Tarjeta con la foto de Camilo Andrés Gómez */}
             <CamiloCard img={camiloImg} />
+
+            <div className="mt-4 rounded-sm border border-gold/35 bg-gradient-to-b from-[#0d1a34] to-[#0a1429] p-3 sm:p-4">
+              <p className="font-condensed text-xs font-bold tracking-[0.14em] uppercase text-gold m-0 mb-2.5">
+                Video destacado
+              </p>
+              <div className="relative w-full overflow-hidden rounded-sm border border-white/10 shadow-[0_16px_30px_rgba(0,0,0,0.35)]">
+                <div className="w-full aspect-video bg-black">
+                  <iframe
+                    src="https://www.youtube.com/embed/OXhEgwxUwdQ"
+                    title="Camilo Gómez - Video destacado"
+                    className="w-full h-full border-0"
+                    loading="lazy"
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -530,32 +600,65 @@ export default function App() {
           <TeamSlider images={teamImages} />
         </div>
 
-        {/* footer / contacts */}
-        <div className="relative z-10 mt-8 bg-navy2 border-t-2 border-crimson px-6 py-5 sm:px-12 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-          <div className="flex flex-col gap-3">
-            {PHONES.map((p) => (
-              <div key={p.number} className="flex items-center gap-3 flex-wrap">
-                <span className="font-condensed text-base font-semibold text-white">
-                  {p.label}: {p.number.slice(0, 3)} {p.number.slice(3, 6)} {p.number.slice(6)}
-                </span>
+        {/* footer */}
+        <footer className="relative z-10 mt-10 bg-[#070b14] border-t border-white/10">
+          <div className="px-6 sm:px-12 py-8 sm:py-10">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
+              <div className="text-center md:text-left">
+                <div className="inline-flex items-center gap-3">
+                  <img src={logoImg} alt="Logo Vera Futbol Club" className="w-9 h-9 object-contain" />
+                  <p className="m-0 font-condensed text-2xl text-[#E7E9EE] uppercase tracking-[0.05em]">
+                    Vera Futbol Club
+                  </p>
+                </div>
+                <p className="m-0 mt-4 max-w-[340px] mx-auto md:mx-0 text-[15px] leading-relaxed text-[#A8AFBD]">
+                  Plataforma de gestión deportiva enfocada al fútbol y al fútbol sala, con planificación integral de entrenamientos y analítica de rendimiento.
+                </p>
+              </div>
+
+              <div className="text-center md:text-left">
+                <p className="m-0 font-condensed text-xs font-bold tracking-[0.16em] uppercase text-[#B8C0D1] mb-4">
+                  Síguenos
+                </p>
+                <div className="flex items-center justify-center md:justify-start gap-3">
+                  {FOOTER_SOCIAL_LINKS.map((s) => (
+                    <a
+                      key={s.name}
+                      href={s.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={s.name}
+                      title={s.name}
+                      className="w-14 h-14 rounded-xl inline-flex items-center justify-center hover:bg-white/[0.08] hover:border-white/30 transition-all"
+                    >
+                      <img src={s.icon} alt={s.name} className="h-8 w-auto block opacity-90" />
+                    </a>
+                  ))}
+                </div>
+              </div>
+
+              <div className="text-center md:text-left">
+                <p className="m-0 font-condensed text-xs font-bold tracking-[0.16em] uppercase text-[#B8C0D1] mb-3">
+                  Desarrollado por
+                </p>
+                <p className="m-0 text-white font-semibold text-xl">Daniel Jose Morales Teatino</p>
                 <a
-                  href={waLink(p.number)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-condensed font-bold text-xs tracking-[0.06em] uppercase text-white bg-whats px-2.5 py-1.5 rounded-sm no-underline hover:opacity-85 transition-opacity"
+                  href="mailto:danielmoralesteatino2004@gmail.com"
+                  className="inline-block mt-2 text-[15px] text-[#A8AFBD] no-underline hover:text-white transition-colors"
                 >
-                  WhatsApp
+                  danielmoralesteatino2004@gmail.com
                 </a>
               </div>
-            ))}
-            <a href={`mailto:${EMAIL}`} className="font-condensed text-sm font-semibold text-gold no-underline">
-              {EMAIL}
-            </a>
+            </div>
           </div>
-          <div className="font-condensed text-xs tracking-[0.18em] uppercase text-[#7C879C]">
-            Federación Colombiana de Fútbol · Liga BetPlay Futsal
+
+          <div className="px-6 sm:px-12 border-t border-white/10 py-4">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
+              <p className="m-0 text-sm text-[#7E8697]">© 2026 VERA FUTBOL CLUB. Todos los derechos reservados.</p>
+              <p className="m-0 text-sm text-[#7E8697]">Ingeniería de software: Daniel Jose Morales Teatino</p>
+            </div>
           </div>
-        </div>
+        </footer>
       </div>
 
       {/* Modal del certificado/PDF de la licencia seleccionada */}
