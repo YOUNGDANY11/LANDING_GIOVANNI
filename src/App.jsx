@@ -234,39 +234,50 @@ function SocialLinks({ links }) {
 }
 // Modal simple para mostrar el certificado (PDF) de una licencia
 function CertModal({ open, onClose, pdf, title }) {
+  useEffect(() => {
+    if (!open) return;
+
+    const handleEsc = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, [open, onClose]);
+
   if (!open) return null;
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 px-4"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/75 px-0 sm:px-4"
       onClick={onClose}
     >
       <div
-        className="relative max-w-[760px] w-full bg-navy border border-gold shadow-[0_30px_70px_rgba(0,0,0,0.6)] overflow-hidden"
+        className="relative w-full sm:max-w-[760px] bg-navy border border-gold shadow-[0_30px_70px_rgba(0,0,0,0.6)] overflow-hidden rounded-t-lg sm:rounded-none max-h-[100dvh]"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           type="button"
           onClick={onClose}
           aria-label="Cerrar"
-          className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-crimson text-white font-bold flex items-center justify-center hover:opacity-85 transition-opacity"
+          className="absolute top-2 right-2 sm:top-3 sm:right-3 w-8 h-8 rounded-full bg-crimson text-white font-bold flex items-center justify-center hover:opacity-85 transition-opacity z-10"
         >
           ×
         </button>
-        <div className="p-4 sm:p-5">
-          <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
-            <p className="font-condensed font-bold text-gold uppercase text-sm tracking-[0.08em] m-0">
+        <div className="p-3 sm:p-5">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3 pr-10 sm:pr-12">
+            <p className="font-condensed font-bold text-gold uppercase text-xs sm:text-sm tracking-[0.08em] m-0">
               {title}
             </p>
             <a
               href={pdf}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-condensed text-xs font-bold tracking-[0.06em] uppercase text-navy bg-gold px-3 py-1.5 rounded-sm no-underline hover:opacity-90 transition-opacity"
+              className="inline-flex items-center justify-center self-start sm:self-auto font-condensed text-xs font-bold tracking-[0.06em] uppercase text-navy bg-gold px-3 py-2 rounded-sm no-underline hover:opacity-90 transition-opacity"
             >
               Abrir PDF ↗
             </a>
           </div>
-          <div className="h-[78vh] min-h-[520px] max-h-[calc(100vh-9rem)] border border-white/10 bg-white overflow-hidden rounded-sm">
+          <div className="h-[calc(100dvh-8.5rem)] min-h-[320px] max-h-[calc(100dvh-8.5rem)] sm:h-[78vh] sm:min-h-[520px] sm:max-h-[calc(100dvh-9rem)] border border-white/10 bg-white overflow-hidden rounded-sm">
             <iframe
               src={pdf}
               title={title}
@@ -287,6 +298,17 @@ export default function App() {
   const active = LICENSES.find((l) => l.id === activeId);
   // Certificado asociado a la licencia actualmente seleccionada (si existe)
   const currentCert = active ? LICENSE_CERTS[active.id] : null;
+
+  useEffect(() => {
+    if (!activeCert) return;
+
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [activeCert]);
 
   return (
     <div className="min-h-screen w-full bg-[#060d1c] flex justify-center px-2 py-6 sm:px-4 sm:py-8 font-sans">
