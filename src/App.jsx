@@ -419,7 +419,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen w-full bg-[#060d1c] flex justify-center px-2 py-6 sm:px-4 sm:py-8 font-sans">
-      {alertOpen && <TrainingAlert onClose={() => setAlertOpen(false)} />}
+      {/* {alertOpen && <TrainingAlert onClose={() => setAlertOpen(false)} />} */}
       <div className="w-full max-w-[1000px] relative overflow-hidden bg-navy text-paper border border-white/5 shadow-[0_40px_90px_rgba(0,0,0,0.55)]">
         {/* signature court motif: cancha de fútbol sala (proporción real 2:1, sin deformar) */}
         <div className="pointer-events-none absolute inset-0 z-0 flex items-start justify-center pt-20 sm:pt-28 opacity-[0.07]">
