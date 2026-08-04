@@ -6,7 +6,9 @@ import teamImg2 from "./assets/vera.png";
 // TODO: agrega la foto real de Camilo en /src/assets y ajusta el nombre del archivo
 import camiloImg from "./assets/CAMILO.png";
 // TODO: agrega el PDF del certificado de la Licencia PRO Futsal en /src/assets
-import certProPdf from "./assets/lic_pro.pdf";
+import certProPdf from "./assets/coachLicense_FCF_FUTSAL PRO_5475680.pdf";
+import certCPdf from "./assets/coachLicense_FCF_C_5475680.pdf";
+import certBPdf from "./assets/lic_B.pdf";
 // TODO: agrega el PDF de la Tarjeta de Entrenador COCED en /src/assets
 import cocedPdf from "./assets/tarjeta_coced.pdf";
 import LicenseButton from "./components/LicenseButton.jsx";
@@ -20,14 +22,22 @@ import tiktokIcon from "./assets/tiktok.svg";
 import linkedinIcon from "./assets/threads.svg";
 import gmailIcon from "./assets/gmail.svg";
 import logoImg from "./assets/logo.png";
+import certProFutsal2026Pdf from "./assets/lic_pro.pdf";
+import teamVideo from "./assets/grito-guerra.mp4";
 // ---- PDFs asociados a cada licencia (por id) ----
 // Agrega aquí una entrada por cada licencia que deba tener botón "Más información" + modal PDF.
 // El "id" debe coincidir exactamente con el id definido en data/licenses.js
 const LICENSE_CERTS = {
   pro: { pdf: certProPdf, title: "Certificado — Licencia PRO Futsal" },
+  c: {pdf: certCPdf, title:"Licencia C — FCF"},
+  b: {pdf: certBPdf, title:"Licencia B — FCF"},
   coced: { pdf: cocedPdf, title: "Tarjeta de Entrenador — COCED" },
 };
 
+const PRO_FUTSAL_2026_CERT = {
+  pdf: certProFutsal2026Pdf,
+  title: "Certificado Licencia Pro Futsal 2026 Conmebol",
+};
 // ---- Redes sociales ----
 // TODO: reemplaza cada "url" por el enlace real de cada red/página
 // Para Gmail, el enlace normalmente es un mailto: con el correo de contacto
@@ -102,9 +112,9 @@ const ACHIEVEMENTS = [
 
 // ---- Fotos del equipo (agrega más aquí) ----
 const teamImages = [
+  { type: "video", src: teamVideo, caption: "Video del equipo — VERA FUTBOL CLUB" },
   { src: teamImg, caption: "Cuerpo técnico y plantel — SANPAS Boyacá, Liga BetPlay Futsal FCF" },
   { src: teamImg2, caption: "VERA FUTBOL CLUB - MARCAS LIGA DE FÚTBOL DE BOGOTÁ" },
-  // { src: teamImg3, caption: "Descripción de la tercera foto" },
 ];
 
 // Duración de cada imagen del slider, en milisegundos
@@ -114,87 +124,167 @@ const formatPhone = (num) => `${num.slice(0, 3)} ${num.slice(3, 6)} ${num.slice(
 
 function TeamSlider({ images }) {
   const [index, setIndex] = useState(0);
+  const [isMuted, setIsMuted] = useState(true);
   const total = images.length;
   const current = images[index];
   const intervalRef = useRef(null);
+  const videoRef = useRef(null);
 
-  const resetAutoplay = () => {
-    if (intervalRef.current) clearInterval(intervalRef.current);
-    if (total > 1) {
-      intervalRef.current = setInterval(() => {
-        setIndex((i) => (i + 1) % total);
-      }, SLIDER_INTERVAL_MS);
+  const clearAutoplay = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
     }
   };
 
-  // Arranca el autoplay al montar y cada vez que cambie el número de imágenes
   useEffect(() => {
-    resetAutoplay();
-    return () => clearInterval(intervalRef.current);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [total]);
+    clearAutoplay();
+    if (total <= 1) return;
 
-  const goPrev = () => {
-    setIndex((i) => (i - 1 + total) % total);
-    resetAutoplay();
+    if (current.type === "video") {
+      if (videoRef.current) {
+        videoRef.current.currentTime = 0;
+        videoRef.current.muted = isMuted;
+        videoRef.current.play().catch(() => {
+          if (videoRef.current) {
+            videoRef.current.muted = true;
+            setIsMuted(true);
+            videoRef.current.play().catch(() => {});
+          }
+        });
+      }
+      return;
+    }
+
+    intervalRef.current = setInterval(() => {
+      setIndex((i) => (i + 1) % total);
+    }, SLIDER_INTERVAL_MS);
+
+    return () => clearAutoplay();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [index, total]);
+
+  const goPrev = () => setIndex((i) => (i - 1 + total) % total);
+  const goNext = () => setIndex((i) => (i + 1) % total);
+  const goTo = (i) => setIndex(i);
+
+  const toggleMute = () => {
+    setIsMuted((prev) => {
+      const next = !prev;
+      if (videoRef.current) videoRef.current.muted = next;
+      return next;
+    });
   };
-  const goNext = () => {
-    setIndex((i) => (i + 1) % total);
-    resetAutoplay();
-  };
-  const goTo = (i) => {
-    setIndex(i);
-    resetAutoplay();
-  };
-  
 
   return (
-    <div className="relative">
-      <div className="relative overflow-hidden">
-        <img
-          src={current.src}
-          alt={current.caption}
-          className="w-full block"
-        />
+    <div className="relative w-full max-w-[820px] mx-auto">
+      <div className="relative w-full aspect-[16/9] overflow-hidden rounded-lg border border-gold/25 bg-black shadow-[0_20px_45px_rgba(0,0,0,0.5)]">
+        {/* slides */}
+        {images.map((img, i) => (
+          <div
+            key={i}
+            className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+              i === index ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
+            }`}
+          >
+            {img.type === "video" ? (
+              <video
+                ref={i === index ? videoRef : null}
+                src={img.src}
+                className="w-full h-full object-cover"
+                muted={isMuted}
+                playsInline
+                onEnded={i === index ? goNext : undefined}
+              />
+            ) : (
+              <img
+                src={img.src}
+                alt={img.caption}
+                className="w-full h-full object-cover"
+              />
+            )}
+          </div>
+        ))}
+
+        {/* degradado inferior para legibilidad */}
+        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/85 to-transparent z-20 pointer-events-none" />
+
+        {/* caption sobre el degradado */}
+        <p className="absolute left-4 right-16 bottom-3 z-30 font-condensed text-xs sm:text-sm tracking-[0.04em] text-white/90 uppercase m-0 drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
+          {current.caption}
+        </p>
+
+        {/* botón de sonido, solo para video */}
+        {current.type === "video" && (
+          <button
+            type="button"
+            onClick={toggleMute}
+            aria-label={isMuted ? "Activar sonido" : "Silenciar"}
+            title={isMuted ? "Activar sonido" : "Silenciar"}
+            className="absolute bottom-3 right-3 z-30 w-9 h-9 flex items-center justify-center bg-gold/90 hover:bg-gold text-navy rounded-full shadow-md transition-colors"
+          >
+            {isMuted ? (
+              <svg viewBox="0 0 24 24" className="w-[18px] h-[18px]" fill="currentColor">
+                <path d="M16.5 12A4.5 4.5 0 0 0 14 8v2.2l2.45 2.45c.03-.21.05-.43.05-.65Z" />
+                <path d="M19 12a6.97 6.97 0 0 1-1.17 3.88l1.45 1.45A8.93 8.93 0 0 0 21 12c0-4.28-3-7.85-7-8.72v2.06c2.89.81 5 3.44 5 6.66Z" />
+                <path d="M4.27 3 3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.53-1.42.95-2.25 1.19v2.06a8.94 8.94 0 0 0 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3ZM12 4 9.91 6.09 12 8.18V4Z" />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" className="w-[18px] h-[18px]" fill="currentColor">
+                <path d="M3 9v6h4l5 5V4L7 9H3Z" />
+                <path d="M16.5 12A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4Z" />
+                <path d="M14 4v2.06c2.89.81 5 3.44 5 6.66s-2.11 5.85-5 6.66V21c4-.86 7-4.43 7-9s-3-8.14-7-8Z" />
+              </svg>
+            )}
+          </button>
+        )}
+
+        {/* flechas de navegación */}
         {total > 1 && (
           <>
             <button
               type="button"
               onClick={goPrev}
-              aria-label="Foto anterior"
-              className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center bg-black/50 hover:bg-black/70 transition-colors text-white text-lg font-bold rounded-full"
+              aria-label="Anterior"
+              className="absolute left-3 top-1/2 -translate-y-1/2 z-30 w-10 h-10 flex items-center justify-center bg-black/40 hover:bg-gold hover:text-navy backdrop-blur-sm text-white text-xl font-bold rounded-full transition-all"
             >
               ‹
             </button>
             <button
               type="button"
               onClick={goNext}
-              aria-label="Foto siguiente"
-              className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center bg-black/50 hover:bg-black/70 transition-colors text-white text-lg font-bold rounded-full"
+              aria-label="Siguiente"
+              className="absolute right-3 top-1/2 -translate-y-1/2 z-30 w-10 h-10 flex items-center justify-center bg-black/40 hover:bg-gold hover:text-navy backdrop-blur-sm text-white text-xl font-bold rounded-full transition-all"
             >
               ›
             </button>
           </>
         )}
+
+        {/* etiqueta de conteo */}
+        {total > 1 && (
+          <span className="absolute top-3 right-3 z-30 font-condensed text-[11px] tracking-[0.08em] text-white/85 bg-black/45 px-2.5 py-1 rounded-full backdrop-blur-sm">
+            {index + 1} / {total}
+          </span>
+        )}
       </div>
+
+      {/* indicadores tipo barra de progreso */}
       {total > 1 && (
-        <div className="flex justify-center gap-2 mt-2.5">
+        <div className="flex justify-center gap-1.5 mt-3">
           {images.map((_, i) => (
             <button
               key={i}
               type="button"
               onClick={() => goTo(i)}
               aria-label={`Ir a la foto ${i + 1}`}
-              className={`w-2 h-2 rounded-full transition-colors ${
-                i === index ? "bg-gold" : "bg-white/25"
+              className={`h-[3px] rounded-full transition-all duration-300 ${
+                i === index ? "w-8 bg-gold" : "w-4 bg-white/25 hover:bg-white/40"
               }`}
             />
           ))}
         </div>
       )}
-      <p className="font-condensed text-xs tracking-[0.04em] text-[#9CA6B8] mt-2 uppercase">
-        {current.caption}
-      </p>
     </div>
   );
 }
@@ -426,7 +516,21 @@ export default function App() {
                 {EMAIL}
               </a>
             </div>
+            {/* Certificado Licencia PRO Futsal 2026 Conmebol */}
+            <div className="mt-5 w-[220px] sm:w-[260px] mx-auto md:mx-0 rounded-sm border border-gold/35 bg-gradient-to-b from-[#102042] to-[#0a1429] p-3.5 shadow-[0_14px_32px_rgba(0,0,0,0.35)]">
+              <p className="font-condensed text-xs font-bold tracking-[0.16em] uppercase text-gold m-0 mb-2.5">
+                Certificado Licencia Pro Futsal 2026 Conmebol
+              </p>
+              <button
+                type="button"
+                onClick={() => setActiveCert(PRO_FUTSAL_2026_CERT)}
+                className="inline-flex items-center gap-2 bg-gold text-navy font-condensed font-bold text-xs tracking-[0.08em] uppercase px-4 py-2.5 rounded-sm hover:opacity-90 transition-opacity w-full justify-center"
+              >
+                Ver certificado
+              </button>
+            </div>
           </div>
+          
 
           {/* info column */}
           <div className="px-6 pt-6 pb-2 sm:pl-9 sm:pr-12 sm:pt-8">
