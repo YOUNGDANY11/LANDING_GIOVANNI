@@ -112,7 +112,7 @@ const ACHIEVEMENTS = [
 
 // ---- Fotos del equipo (agrega más aquí) ----
 const teamImages = [
-  { type: "video", src: teamVideo, caption: "Video del equipo — VERA FUTBOL CLUB" },
+  { type: "video", src: teamVideo, caption: "Video del equipo — SANPAS Boyaca, Liga Betplay Futsal FCF 2026" },
   { src: teamImg, caption: "Cuerpo técnico y plantel — SANPAS Boyacá, Liga BetPlay Futsal FCF" },
   { src: teamImg2, caption: "VERA FUTBOL CLUB - MARCAS LIGA DE FÚTBOL DE BOGOTÁ" },
 ];
